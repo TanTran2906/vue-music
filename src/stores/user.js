@@ -8,17 +8,32 @@ export default defineStore("user", {
     actions: {
         async register(values) {
             //Create user authentication = email + password
-            await auth.createUserWithEmailAndPassword(values.email, values.password)
+            const userCred = await auth.createUserWithEmailAndPassword(values.email, values.password)
 
             //Create user
-            await usersCollection.add({
+            await usersCollection.doc(userCred.user.uid).set({
                 name: values.name,
                 email: values.email,
                 age: values.age,
                 country: values.country
             })
+
+            await userCred.user.updateProfile({
+                displayName: values.name
+            })
             this.userLoggedIn = true
+        },
+        async authenticate(values) {
+            await auth.signInWithEmailAndPassword(values.email, values.password)
+
+            this.userLoggedIn = true
+        },
+        async signOut() {
+            await auth.signOut()
+
+            this.userLoggedIn = false
         }
+
     }
 
 })

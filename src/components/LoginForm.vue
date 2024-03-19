@@ -41,6 +41,10 @@
 </template>
 
 <script>
+import { mapActions, mapStores } from 'pinia'
+import useUserStore from '@/stores/user'
+import useModalStore from '@/stores/modal'
+
 export default {
   name: 'LoginForm',
   data() {
@@ -55,16 +59,29 @@ export default {
       login_alert_msg: 'Please wait! We are logging you in...'
     }
   },
+  computed: {
+    ...mapStores(useModalStore)
+  },
   methods: {
-    login(values) {
+    ...mapActions(useUserStore, ['authenticate']),
+    async login(values) {
       this.login_show_alert = true
       this.login_in_submission = true
       this.login_alert_variant = 'bg-blue-500'
-      this.login_alert_msg = 'Please wait! We are logging you in...'
+      this.login_alert_msg = 'Please wait! We are logging you in.'
+
+      try {
+        await this.authenticate(values)
+      } catch (error) {
+        this.login_in_submission = false
+        this.login_alert_variant = 'bg-red-500'
+        this.login_alert_msg = 'Invalid login details.'
+      }
 
       this.login_alert_variant = 'bg-green-500'
       this.login_alert_msg = 'Success! Your are now logged in.'
-      console.log(values)
+
+      this.modalStore.isOpen = !this.modalStore.isOpen
     }
   }
 }

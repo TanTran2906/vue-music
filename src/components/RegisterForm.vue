@@ -140,7 +140,7 @@ export default {
         await this.createUser(values)
       } catch (error) {
         //Test lỗi
-        console.log(error)
+        // console.log(error)
         this.reg_in_submission = false
         this.reg_alert_variant = 'bg-red-500'
         this.reg_alert_msg = 'An unexpected error occured. Please try again later'
